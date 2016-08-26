@@ -23,6 +23,7 @@ tests:
         python:  'lambda: "world"'
         clojure: '(fn [] "world")'
         lisp:    '(lambda () "world")'
+        erlang:  'fun() -> "world" end.'
     template: "Hello, {{lambda}}!"
     expected: "Hello, world!"
 
@@ -38,6 +39,7 @@ tests:
         python:  'lambda: "{{planet}}"'
         clojure: '(fn [] "{{planet}}")'
         lisp:    '(lambda () "{{planet}}")'
+        erlang:  'fun() -> "{{planet}}" end.'
     template: "Hello, {{lambda}}!"
     expected: "Hello, world!"
 
@@ -53,6 +55,7 @@ tests:
         python:  'lambda: "|planet| => {{planet}}"'
         clojure: '(fn [] "|planet| => {{planet}}")'
         lisp:    '(lambda () "|planet| => {{planet}}")'
+        erlang:  'fun() -> "|planet| => {{planet}}" end.'
     template: "{{= | | =}}\nHello, (|&lambda|)!"
     expected: "Hello, (|planet| => world)!"
 
@@ -67,6 +70,7 @@ tests:
         python:  'lambda: globals().update(calls=globals().get("calls",0)+1) or calls'
         clojure: '(def g (atom 0)) (fn [] (swap! g inc))'
         lisp:    '(let ((g 0)) (lambda () (incf g)))'
+        erlang:  'fun() -> put(global, case get(global) of undefined -> 0; Other -> Other end + 1) end.'
     template: '{{lambda}} == {{{lambda}}} == {{lambda}}'
     expected: '1 == 2 == 3'
 
@@ -81,6 +85,7 @@ tests:
         python:  'lambda: ">"'
         clojure: '(fn [] ">")'
         lisp:    '(lambda () ">")'
+        erlang:  'fun() -> ">" end.'
     template: "<{{lambda}}{{{lambda}}}"
     expected: "<&gt;>"
 
@@ -96,6 +101,7 @@ tests:
         python:  'lambda text: text == "{{x}}" and "yes" or "no"'
         clojure: '(fn [text] (if (= text "{{x}}") "yes" "no"))'
         lisp:    '(lambda (text) (if (string= text "{{x}}") "yes" "no"))'
+        erlang:  'fun(Text) -> case Text == "{{x}}" of true -> "yes"; false -> "no" end end.'
     template: "<{{#lambda}}{{x}}{{/lambda}}>"
     expected: "<yes>"
 
@@ -111,6 +117,7 @@ tests:
         python:  'lambda text: "%s{{planet}}%s" % (text, text)'
         clojure: '(fn [text] (str text "{{planet}}" text))'
         lisp:    '(lambda (text) (format nil "~a{{planet}}~a" text text))'
+        erlang:  'fun(Text) -> Text ++ "{{planet}}" ++ Text end.'
     template: "<{{#lambda}}-{{/lambda}}>"
     expected: "<-Earth->"
 
@@ -126,6 +133,7 @@ tests:
         python:  'lambda text: "%s{{planet}} => |planet|%s" % (text, text)'
         clojure: '(fn [text] (str text "{{planet}} => |planet|" text))'
         lisp:    '(lambda (text) (format nil "~a{{planet}} => |planet|~a" text text))'
+        erlang:  'fun(Text) -> io_lib:format("~s{{planet}} => |planet|~s", [Text, Text]) end.'
     template: "{{= | | =}}<|#lambda|-|/lambda|>"
     expected: "<-{{planet}} => Earth->"
 
@@ -140,6 +148,7 @@ tests:
         python:  'lambda text: "__%s__" % (text)'
         clojure: '(fn [text] (str "__" text "__"))'
         lisp:    '(lambda (text) (format nil "__~a__" text))'
+        erlang:  'fun(Text) -> io_lib:format("__~s__", [Text]) end.'
     template: '{{#lambda}}FILE{{/lambda}} != {{#lambda}}LINE{{/lambda}}'
     expected: '__FILE__ != __LINE__'
 
@@ -155,5 +164,6 @@ tests:
         python:  'lambda text: 0'
         clojure: '(fn [text] false)'
         lisp:    '(lambda (text) (declare (ignore text)) nil)'
+        erlang:  'fun(Text) -> false end.'
     template: "<{{^lambda}}{{static}}{{/lambda}}>"
     expected: "<>"
